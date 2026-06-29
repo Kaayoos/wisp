@@ -1,0 +1,81 @@
+WISP - END USER LICENSE AGREEMENT
+=================================
+Last updated: June 2026
+
+This End User License Agreement ("Agreement") is a legal agreement between you
+("you") and MinimalPulse ("we", "us", "our") for the Wisp software application,
+including its executables, assets, and documentation (the "Software").
+
+By installing, copying, or using the Software, you agree to be bound by this
+Agreement. If you do not agree, do not install or use the Software.
+
+1. LICENSE GRANT
+   We grant you a personal, non-exclusive, non-transferable, revocable license
+   to install and use the Software free of charge on devices you own or control,
+   for personal or internal business use.
+
+2. RESTRICTIONS
+   You may not: (a) sell, rent, lease, sublicense, or redistribute the Software
+   for a fee; (b) modify, reverse engineer, decompile, or disassemble the
+   Software, except to the limited extent that this restriction is prohibited by
+   applicable law (for example, where the law grants a non-waivable right to
+   decompile for interoperability); (c) remove or alter any proprietary notices;
+   or (d) use the Software to infringe the rights of others or to violate any law.
+
+3. OWNERSHIP
+   The Software is licensed, not sold. We and our licensors retain all right,
+   title, and interest in the Software, including all intellectual property
+   rights. "Wisp", the Wisp wordmark, and the Wisp logo are trademarks of
+   MinimalPulse.
+
+4. THIRD-PARTY COMPONENTS
+   The Software includes third-party components licensed under their own terms,
+   including FFmpeg (GNU General Public License, version 3). Those terms are
+   described in the accompanying NOTICES.txt and, where applicable, govern your
+   use of those components. Nothing in this Agreement limits the rights granted
+   to you under those third-party licenses.
+
+5. PLUGINS
+   The Software can load third-party plugins. Plugins are provided by their
+   respective authors under their own terms; we do not endorse and are not
+   responsible for third-party plugins. You install and run plugins at your own
+   risk.
+
+6. YOUR RECORDINGS
+   The Software records your screen, audio, and related content locally on your
+   device. You are solely responsible for what you record and for complying with
+   all applicable laws, including the rights, privacy, and consent of any other
+   people who may be captured.
+
+7. NO WARRANTY
+   THE SOFTWARE IS PROVIDED "AS IS" AND "AS AVAILABLE", WITHOUT WARRANTY OF ANY
+   KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES
+   OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
+
+8. LIMITATION OF LIABILITY
+   TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT WILL MINIMALPULSE BE LIABLE
+   FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, OR
+   FOR ANY LOSS OF DATA, PROFITS, OR GOODWILL, ARISING OUT OF OR RELATED TO YOUR
+   USE OF THE SOFTWARE. OUR TOTAL AGGREGATE LIABILITY WILL NOT EXCEED THE AMOUNT
+   YOU PAID FOR THE SOFTWARE (WHICH, FOR A FREE LICENSE, IS ZERO).
+
+9. UPDATES
+   The Software may automatically check for, download, and install updates from
+   our distribution channel (currently GitHub) so that you stay on the latest
+   version. Where the Software offers the option, you may disable automatic
+   updates.
+
+10. TERMINATION
+    This Agreement is effective until terminated. It terminates automatically,
+    without notice, if you breach it. On termination you must stop using and
+    uninstall the Software.
+
+11. GOVERNING LAW
+    This Agreement is governed by the laws of Poland, without regard to its
+    conflict-of-law rules, except where your local mandatory consumer-protection
+    law provides otherwise.
+
+12. CONTACT
+    Questions about this Agreement: contact@minimalpulse.com
+
+(c) MinimalPulse. All rights reserved.
