@@ -1,0 +1,37 @@
+# Build output
+bin/
+obj/
+publish/
+release/
+releaseSetup/
+
+# IDE / tooling
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Local tooling / editor working directories (not app source)
+.claude/
+
+# OS junk
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Local data / logs that should never live inside the repo
+*.db
+*.db-journal
+*.log
+settings.json
+
+# Stray test/debug output (should never be committed - not source)
+*.mp4
+
+# Fetched at build time by fetch-ffmpeg.ps1 - not committed, ~100 MB
+Resources/ffmpeg.exe
+
+# Internal working notes / strategy, kept local (not public docs)
+PLUGIN_SYSTEM_HANDOFF.md
+PRODUCT.md

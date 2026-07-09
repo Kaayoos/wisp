@@ -1,0 +1,22 @@
+{
+  "_comment": "Overwatch 2 kill detection spec (EXPERIMENTAL). The ROI targets the red 'ELIMINATED <player>' confirmation that appears center-screen below the crosshair on the player's own eliminations. Tune with Settings > Kill Detection > Diagnostic mode: dumped ROI images + scores.csv show what the detector saw. Coordinates are normalized 0-1 of the game monitor.",
+  "processName": "Overwatch",
+  "gameName": "Overwatch 2",
+  "sampleHz": 3,
+  "refractorySeconds": 1.5,
+  "minConsecutiveHits": 2,
+  "rois": [
+    {
+      "id": "elimText",
+      "x": 0.400,
+      "y": 0.580,
+      "w": 0.200,
+      "h": 0.075,
+      "hueMin": 350,
+      "hueMax": 12,
+      "satMin": 0.50,
+      "valMin": 0.45,
+      "minFraction": 0.030
+    }
+  ]
+}

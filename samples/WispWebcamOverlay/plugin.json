@@ -1,0 +1,9 @@
+{
+  "id": "wisp.webcam-overlay",
+  "name": "Camera Overlay",
+  "version": "2.0.0",
+  "author": "MinimalPulse",
+  "description": "Records your webcam in the background and shows it as a movable, playback-synced overlay inside clips - and optionally burns it into exports.",
+  "entryAssembly": "WispWebcamOverlay.dll",
+  "minApiVersion": 4
+}

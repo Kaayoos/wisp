@@ -1,0 +1,121 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+
+    <!-- We provide our own Main (Program.cs) so Velopack can run before WPF starts. App.xaml is built
+         as a Page (below) so WPF doesn't ALSO emit a Main - this names the real entry point. -->
+    <StartupObject>Wisp.Program</StartupObject>
+
+    <!-- The SDK project and sample plugins live in subfolders of this project's directory. Exclude
+         them from Wisp's default source/resource globs so their .cs (and generated obj/ AssemblyInfo)
+         aren't compiled INTO Wisp - they're separate assemblies, referenced as a project/DLL. Without
+         this you get CS0436 type conflicts + CS0579 duplicate-attribute build errors. -->
+    <DefaultItemExcludes>$(DefaultItemExcludes);Wisp.Plugins.Abstractions\**;samples\**</DefaultItemExcludes>
+
+    <!-- Per-Monitor-V2 DPI awareness (see app.manifest): fixes maximize overflow on a
+         differently-scaled second monitor and gives crisp per-monitor rendering. -->
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+
+    <!-- WFAC010: the WinForms analyzer wants DPI configured via ApplicationHighDpiMode /
+         Application.SetHighDpiMode. That path is for WinForms Application.Run apps; Wisp is WPF-driven
+         (WinForms is referenced only for Screen.AllScreens, no message loop), and WPF reads DPI
+         awareness from the application manifest. The manifest is the correct, authoritative source here. -->
+    <NoWarn>$(NoWarn);WFAC010</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Using Remove="System.Drawing" />
+    <Using Remove="System.Windows.Forms" />
+  </ItemGroup>
+
+  <!-- Build App.xaml as a Page (not the default ApplicationDefinition) so WPF does NOT generate its own
+       Main(). Our entry point is Program.Main (StartupObject above), which runs Velopack first. App still
+       gets InitializeComponent() to load its resources/ShutdownMode. -->
+  <ItemGroup>
+    <ApplicationDefinition Remove="App.xaml" />
+    <Page Include="App.xaml" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <!-- Branding: Wisp, by MinimalPulse -->
+    <AssemblyName>Wisp</AssemblyName>
+    <RootNamespace>Wisp</RootNamespace>
+    <Product>Wisp</Product>
+    <Company>MinimalPulse</Company>
+    <Authors>MinimalPulse</Authors>
+    <Copyright>© MinimalPulse</Copyright>
+    <ApplicationIcon>img\Wisp.ico</ApplicationIcon>
+
+    <!-- Single source of truth for the app version. Drives AssemblyVersion/FileVersion AND the
+         Velopack release version (the release pipeline reads this), so the auto-updater compares
+         against it. Bump this for every public release. -->
+    <Version>1.1.0</Version>
+
+    <!-- Favor a small memory footprint for a background tray app -->
+    <ServerGarbageCollection>false</ServerGarbageCollection>
+    <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
+
+    <!-- Single file publish properties -->
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PublishReadyToRun>true</PublishReadyToRun>
+  </PropertyGroup>
+
+  <!-- The public plugin SDK. Ships next to Wisp.exe; plugins reference this same DLL so their
+       IWispPlugin type unifies with the host's (see Services/Plugins/PluginLoadContext.cs). -->
+  <ItemGroup>
+    <ProjectReference Include="Wisp.Plugins.Abstractions\Wisp.Plugins.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.8" />
+    <PackageReference Include="NAudio" Version="2.3.0" />
+    <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="8.0.1" />
+    <PackageReference Include="System.Management" Version="10.0.8" />
+    <PackageReference Include="Velopack" Version="1.2.0" />
+    <PackageReference Include="Vosk" Version="0.3.38" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\ffmpeg.exe">
+      <LogicalName>Wisp.Resources.ffmpeg.exe</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <!-- Kill-detection vision specs (per-game ROIs + thresholds). Explicit logical names so the code's
+       GetManifestResourceStream lookups survive any resource-name mangling. -->
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\KillDetection\valorant.json">
+      <LogicalName>Wisp.Resources.KillDetection.valorant.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\KillDetection\overwatch2.json">
+      <LogicalName>Wisp.Resources.KillDetection.overwatch2.json</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <!-- Branding artwork compiled into the assembly (tray icon + in-app wordmark) -->
+  <ItemGroup>
+    <None Remove="img\WispIcon.png" />
+    <None Remove="img\WispWordmark.png" />
+    <Resource Include="img\WispIcon.png" />
+    <Resource Include="img\WispWordmark.png" />
+  </ItemGroup>
+
+  <!-- Bundled offline speech models are now downloaded on-demand and are not shipped with the app -->
+
+  <!-- Legal: Wisp's EULA + third-party notices + FFmpeg's GPLv3 text must ship next to the exe -->
+  <ItemGroup>
+    <None Include="EULA.txt" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="NOTICES.txt" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="LICENSE-FFmpeg-GPLv3.txt" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

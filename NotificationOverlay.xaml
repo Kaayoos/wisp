@@ -1,0 +1,78 @@
+<Window x:Class="Wisp.NotificationOverlay"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Wisp Notification" Height="52" Width="240"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        Topmost="True" ShowInTaskbar="False" ShowActivated="False"
+        Focusable="False" IsHitTestVisible="False" Loaded="Window_Loaded">
+
+    <Window.Resources>
+        <Storyboard x:Key="IntroStoryboard">
+            <!-- Fade In -->
+            <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.25"/>
+            <!-- Slide Down -->
+            <DoubleAnimation Storyboard.TargetName="NotificationBorder" 
+                             Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)" 
+                             From="-25" To="0" Duration="0:0:0.3">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseOut"/>
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+        <Storyboard x:Key="SpinStoryboard">
+            <DoubleAnimation Storyboard.TargetName="SpinnerRotate"
+                             Storyboard.TargetProperty="Angle"
+                             From="0" To="360" Duration="0:0:1"
+                             RepeatBehavior="Forever"/>
+        </Storyboard>
+        <Storyboard x:Key="OutroStoryboard" Completed="OutroStoryboard_Completed">
+            <!-- Fade Out -->
+            <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0" BeginTime="0:0:2.0" Duration="0:0:0.3"/>
+            <!-- Slide Up slightly -->
+            <DoubleAnimation Storyboard.TargetName="NotificationBorder" 
+                             Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)" 
+                             To="-10" BeginTime="0:0:2.0" Duration="0:0:0.3">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseIn"/>
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+    </Window.Resources>
+
+    <Border x:Name="NotificationBorder" Background="#EE121414" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1.5" CornerRadius="6" Margin="2">
+        <Border.RenderTransform>
+            <TranslateTransform X="0" Y="-25"/>
+        </Border.RenderTransform>
+        <Grid Margin="12,0,12,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Dynamic Status Icon Container -->
+            <Grid Grid.Column="0" Width="24" Height="24" Margin="0,0,10,0" VerticalAlignment="Center">
+                <!-- Spinning Loader -->
+                <Ellipse x:Name="Spinner" Stroke="{DynamicResource AccentBrush}" StrokeThickness="2" StrokeDashArray="3 1.5" Width="16" Height="16" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Ellipse.RenderTransform>
+                        <RotateTransform x:Name="SpinnerRotate" Angle="0"/>
+                    </Ellipse.RenderTransform>
+                </Ellipse>
+                <!-- Success Checkmark -->
+                <TextBlock x:Name="SuccessIcon" Text="✓" FontSize="18" Foreground="#34D399" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="Collapsed"/>
+                <!-- Failure Warning -->
+                <TextBlock x:Name="FailureIcon" Text="⚠" FontSize="18" Foreground="#FF4444" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="Collapsed"/>
+                <!-- Info dot (auto-record started/stopped) -->
+                <TextBlock x:Name="InfoIcon" Text="●" FontSize="16" Foreground="#FF4444" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="Collapsed"/>
+                <!-- Chain link glyph (clip chaining) -->
+                <TextBlock x:Name="ChainIcon" Text="&#xE71B;" FontFamily="Segoe MDL2 Assets" FontSize="15" Foreground="{DynamicResource AccentBrush}" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="Collapsed"/>
+            </Grid>
+
+            <!-- Text Content -->
+            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                <TextBlock x:Name="TitleText" Text="CLIPPING MOMENT..." Foreground="{DynamicResource AccentBrush}" FontSize="10" FontWeight="Bold"/>
+                <TextBlock x:Name="SubText" Text="Saving your replay to a clip..." Foreground="#B9CACB" FontSize="9" Margin="0,1,0,0"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>
+

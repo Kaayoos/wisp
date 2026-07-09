@@ -1,0 +1,85 @@
+WISP - THIRD-PARTY SOFTWARE NOTICES
+===================================
+
+Wisp is distributed free of charge. It bundles the third-party components listed
+below. Their respective licenses are reproduced or referenced here. Nothing in
+this file restricts your rights under those licenses.
+
+-------------------------------------------------------------------------------
+1) FFmpeg  -  video recording, trimming, and export
+-------------------------------------------------------------------------------
+Wisp uses FFmpeg (https://ffmpeg.org). FFmpeg is bundled as a separate
+command-line executable and is run by Wisp as its own process (it is never
+linked into Wisp). The shipped file is named "WispCapture.exe".
+
+FFmpeg's executable CODE is unmodified. Only the file's Windows PE resource
+metadata - the application icon and the product / company / version / file-
+name strings - was changed for branding (last changed June 2026). This change
+does not alter FFmpeg's behavior in any way. In accordance with GPLv3 section 5,
+this notice records that the binary's resource metadata was modified, and when.
+
+  Version    : 8.1.1  ("essentials" build by gyan.dev)
+  Build flags: --enable-gpl --enable-version3  (includes libx264, libx265)
+  License    : GNU General Public License, version 3 (GPLv3)
+  Copyright  : (c) 2000-2026 the FFmpeg developers
+
+Because this build is configured with --enable-gpl and --enable-version3, the
+bundled ffmpeg.exe is licensed under the GNU GPL version 3. A complete copy of
+the GPLv3 is included with this distribution as:
+
+      LICENSE-FFmpeg-GPLv3.txt
+  (also at https://www.gnu.org/licenses/gpl-3.0.html)
+
+WRITTEN OFFER FOR CORRESPONDING SOURCE CODE
+  The complete corresponding source code for the exact FFmpeg build shipped with
+  Wisp is available, free of charge, from:
+      - FFmpeg source : https://ffmpeg.org/download.html   (release 8.1.1)
+      - Build origin  : https://www.gyan.dev/ffmpeg/builds/
+  If either location becomes unavailable, you may also obtain the corresponding
+  source from:  contact@minimalpulse.com
+  This offer is valid for as long as Wisp is distributed.
+
+NOTE ON WISP'S OWN LICENSE
+  Wisp interacts with FFmpeg only by launching it as a separate process
+  (arms-length aggregation). Wisp's own source code is therefore NOT a derivative
+  work of FFmpeg and is not placed under the GPL by this bundling.
+
+-------------------------------------------------------------------------------
+2) Vosk  -  offline speech recognition (optional "voice trigger")
+-------------------------------------------------------------------------------
+  Project : https://github.com/alphacep/vosk-api
+  License : Apache License 2.0
+  The bundled language models (vosk-model-en, vosk-model-pl) are distributed
+  under their own terms as published in the Vosk model repository
+  (https://alphacephei.com/vosk/models).
+
+-------------------------------------------------------------------------------
+3) NAudio  -  live audio mixing and playback
+-------------------------------------------------------------------------------
+  Project : https://github.com/naudio/NAudio
+  License : MIT License
+
+-------------------------------------------------------------------------------
+4) Microsoft.Data.Sqlite  -  local clip library database
+-------------------------------------------------------------------------------
+  Project : https://github.com/dotnet/efcore
+  License : MIT License  (c) Microsoft Corporation
+  (The underlying SQLite engine is in the public domain.)
+
+-------------------------------------------------------------------------------
+5) Hardcodet.NotifyIcon.Wpf  -  system-tray icon
+-------------------------------------------------------------------------------
+  Project : https://github.com/hardcodet/wpf-notifyicon
+  License : MIT License  (c) Philipp Sumi
+  (Please confirm the license text shipped with the version you reference.)
+
+-------------------------------------------------------------------------------
+6) .NET runtime and related libraries (System.Management, etc.)
+-------------------------------------------------------------------------------
+  License : MIT License  (c) Microsoft Corporation and the .NET Foundation
+
+===============================================================================
+For licensing questions about Wisp, contact: contact@minimalpulse.com
+Wisp and the Wisp wordmark/logo are (c) MinimalPulse. All other
+trademarks are the property of their respective owners.
+===============================================================================

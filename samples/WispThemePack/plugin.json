@@ -1,0 +1,9 @@
+{
+  "id": "com.wisp.sample.themepack",
+  "name": "Wisp Theme Pack (Sample)",
+  "version": "1.0.0",
+  "author": "MinimalPulse",
+  "description": "Registers extra themes and adds a clip action + tray shortcut.",
+  "entryAssembly": "WispThemePack.dll",
+  "minApiVersion": 2
+}

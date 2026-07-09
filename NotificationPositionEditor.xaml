@@ -1,0 +1,101 @@
+<Window x:Class="Wisp.NotificationPositionEditor"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Notification Position Editor"
+        WindowStyle="None" AllowsTransparency="True" Background="#CC0D0E0E"
+        Topmost="True" ShowInTaskbar="False" WindowStartupLocation="Manual"
+        Loaded="Window_Loaded" SizeChanged="Window_SizeChanged">
+    
+    <Grid>
+        <!-- The full screen canvas for dragging the notification -->
+        <Canvas x:Name="DragCanvas" Background="Transparent" MouseMove="DragCanvas_MouseMove" MouseLeftButtonUp="DragCanvas_MouseLeftButtonUp">
+            
+            <!-- Instructions and Action panel at the center of the screen -->
+            <Border x:Name="InstructionsCard" Background="#1E2020" BorderBrush="#3B494B" BorderThickness="1.5" CornerRadius="8" Padding="20" Width="320" Height="160">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    
+                    <TextBlock Grid.Row="0" Text="POSITION NOTIFICATION" Foreground="{DynamicResource AccentBrush}" FontWeight="Bold" FontSize="11" FontFamily="Consolas" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Row="1" Text="Drag the preview notification card anywhere on this screen to set where alerts will appear." Foreground="#B9CACB" FontSize="11" TextWrapping="Wrap" TextAlignment="Center" Margin="0,10,0,10"/>
+                    
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button Content="Cancel" Width="80" Height="26" Margin="0,0,10,0" Click="CancelBtn_Click">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Foreground" Value="#B9CACB"/>
+                                    <Setter Property="BorderBrush" Value="#3B494B"/>
+                                    <Setter Property="BorderThickness" Value="1"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="4">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#2A2D2E"/>
+                                            <Setter Property="Foreground" Value="White"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                        
+                        <Button Content="Save Position" Width="100" Height="26" Click="SaveBtn_Click">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+                                    <Setter Property="Foreground" Value="#121414"/>
+                                    <Setter Property="FontWeight" Value="Bold"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}" CornerRadius="4">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Dummy/Preview Notification Card -->
+            <Border x:Name="DummyNotification" Background="#EE121414" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1.5" CornerRadius="6" Width="240" Height="52" Cursor="SizeAll" MouseLeftButtonDown="DummyNotification_MouseLeftButtonDown">
+                <Grid Margin="12,0,12,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    
+                    <Grid Grid.Column="0" Width="24" Height="24" Margin="0,0,10,0" VerticalAlignment="Center">
+                        <!-- Success Checkmark -->
+                        <TextBlock Text="✓" FontSize="18" Foreground="#34D399" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    </Grid>
+                    
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="PREVIEW NOTIFICATION" Foreground="{DynamicResource AccentBrush}" FontSize="10" FontWeight="Bold"/>
+                        <TextBlock Text="Drag me to preferred position" Foreground="#B9CACB" FontSize="9" Margin="0,1,0,0"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+            
+        </Canvas>
+    </Grid>
+</Window>

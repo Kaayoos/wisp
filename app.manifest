@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<assembly manifestVersion="1.0" xmlns="urn:schemas-microsoft-com:asm.v1">
+
+  <!--
+    DPI awareness. Without this, WPF runs System-DPI-aware: the borderless window's maximize
+    (WM_GETMINMAXINFO) handler miscomputes bounds on any monitor whose scaling differs from the
+    primary, so "fullscreen" spilled off a larger/higher-DPI second monitor. Per-Monitor-V2 makes
+    GetMonitorInfo (physical px) and the maximize contract agree on every display, and lets WPF
+    render crisply per monitor. PerMonitor / true/pm are fallbacks for older Windows.
+  -->
+  <application xmlns="urn:schemas-microsoft-com:asm.v3">
+    <windowsSettings>
+      <dpiAware xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">true/pm</dpiAware>
+      <dpiAwareness xmlns="http://schemas.microsoft.com/SMI/2016/WindowsSettings">PerMonitorV2, PerMonitor</dpiAwareness>
+    </windowsSettings>
+  </application>
+
+</assembly>

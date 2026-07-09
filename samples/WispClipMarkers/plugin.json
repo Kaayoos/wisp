@@ -1,0 +1,9 @@
+{
+  "id": "com.wisp.sample.clipmarkers",
+  "name": "Clip Markers (Sample)",
+  "version": "1.0.0",
+  "author": "MinimalPulse",
+  "description": "Adds an 'Add marker' button to the player and saves clickable bookmarks on each clip's timeline.",
+  "entryAssembly": "WispClipMarkers.dll",
+  "minApiVersion": 3
+}

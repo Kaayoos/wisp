@@ -1,0 +1,89 @@
+<Window x:Class="Wisp.CustomMessageBox"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Wisp" Height="160" Width="380"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
+        Opacity="0" Loaded="Window_Loaded"
+        MouseLeftButtonDown="Window_MouseLeftButtonDown">
+
+    <Border x:Name="RootBorder" Background="#121414" BorderBrush="#3B494B" BorderThickness="1" CornerRadius="8" Padding="15" RenderTransformOrigin="0.5,0.5">
+        <Border.RenderTransform>
+            <ScaleTransform ScaleX="0.92" ScaleY="0.92"/>
+        </Border.RenderTransform>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" /> <!-- Header -->
+                <RowDefinition Height="*" />    <!-- Content -->
+                <RowDefinition Height="Auto" /> <!-- Actions -->
+            </Grid.RowDefinitions>
+
+            <!-- Title Header -->
+            <TextBlock x:Name="TitleText" Grid.Row="0" Text="NOTIFICATION" Foreground="#B9CACB" FontWeight="Bold" FontSize="10" FontFamily="Consolas" Margin="0,0,0,10"/>
+
+            <!-- Main Content Area -->
+            <Grid Grid.Row="1" Margin="0,0,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Icon -->
+                <TextBlock x:Name="IconText" Grid.Column="0" Text="&#xE946;" FontFamily="Segoe MDL2 Assets" FontSize="26" VerticalAlignment="Center" Margin="5,0,15,0" Foreground="{DynamicResource AccentBrush}"/>
+
+                <!-- Message Text -->
+                <TextBlock x:Name="MessageText" Grid.Column="1" Text="Message details go here." Foreground="#E2E2E2" FontSize="12" VerticalAlignment="Center" TextWrapping="Wrap" Margin="0,0,10,0"/>
+            </Grid>
+
+            <!-- Action Buttons -->
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,0,0">
+                <!-- Discard/Cancel/No button (Secondary styled button) -->
+                <Button x:Name="NoBtn" Content="No" Width="80" Height="28" Background="Transparent" Foreground="#B9CACB" 
+                        BorderBrush="#3B494B" BorderThickness="1" Click="NoButton_Click" Margin="0,0,10,0" Visibility="Collapsed">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="4">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#282A2B"/>
+                                    <Setter Property="Foreground" Value="#E2E2E2"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <!-- Primary button (Yes/OK) -->
+                <Button x:Name="YesBtn" Content="Yes" Width="80" Height="28" Background="{DynamicResource AccentBrush}" Foreground="#121414" 
+                        BorderThickness="0" FontWeight="Bold" Click="YesButton_Click">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" CornerRadius="4">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

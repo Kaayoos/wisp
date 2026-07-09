@@ -1,0 +1,46 @@
+WISP - USAGE NOTES
+==================
+Last updated: July 2026
+
+Wisp's source code is licensed under the GNU General Public License v3.0
+(see LICENSE in this repository). This file is not a separate license
+agreement - it covers a few practical points that aren't copyright terms.
+
+1. TRADEMARK
+   "Wisp", the Wisp wordmark, and the Wisp logo are trademarks of
+   MinimalPulse and are not covered by the GPLv3 grant. You're free to
+   fork, modify, and redistribute this software under the GPLv3, but
+   builds not published by MinimalPulse shouldn't be presented as "Wisp"
+   or use the Wisp name/logo in a way that implies official endorsement.
+   See TRADEMARK.md for details.
+
+2. THIRD-PARTY COMPONENTS
+   Wisp bundles third-party components under their own licenses,
+   including FFmpeg (GPLv3). See NOTICES.txt for the full list, and
+   LICENSE-FFmpeg-GPLv3.txt for FFmpeg's license text.
+
+3. PLUGINS
+   Wisp can load third-party plugins. Plugins are provided by their
+   respective authors under their own terms; we do not endorse and are
+   not responsible for third-party plugins. Install and run plugins at
+   your own risk.
+
+4. YOUR RECORDINGS
+   Wisp records your screen, audio, and related content locally on your
+   device. You are solely responsible for what you record and for
+   complying with applicable laws, including the rights, privacy, and
+   consent of anyone else who may be captured.
+
+5. UPDATES
+   The official build of Wisp can automatically check for, download, and
+   install updates from our distribution channel (currently GitHub). If
+   the Software offers the option, you may disable automatic updates.
+
+6. NO WARRANTY
+   Wisp is provided "as is", without warranty of any kind, to the extent
+   permitted by law. See LICENSE sections 15-16 for the full disclaimer.
+
+7. CONTACT
+   Questions: contact@minimalpulse.com
+
+(c) MinimalPulse.

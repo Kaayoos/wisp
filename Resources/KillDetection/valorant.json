@@ -1,0 +1,27 @@
+{
+  "_comment": "Valorant kill detection spec (EXPERIMENTAL). Detects the player's own kills by killfeed row structure (mode feedRow) rather than by matching a fixed banner color: the player's kill row reads [gold-boxed self-highlight][teal bar][red bar] left-to-right, the death row is the mirror image, and teammate/enemy rows carry no gold highlight at all. A kill fires when a feed band's gold/teal/red x-centroids fall in that order with enough separation - a signal that holds regardless of the player's weapon skin or game mode, unlike matching the killfeed banner's own color. minConsecutiveHits=1 because the gold highlight is brightest in a row's first ~0.5s; band height, per-class pixel mass, and centroid separation carry the false-positive rejection instead of requiring persistence. Hue windows assume Valorant's default (non-colorblind) palette; alternate palettes need their own spec. Tune with Settings > Kill Detection > Diagnostic mode.",
+  "processName": "VALORANT-Win64-Shipping",
+  "gameName": "Valorant",
+  "sampleHz": 3,
+  "refractorySeconds": 2.5,
+  "minConsecutiveHits": 1,
+  "rois": [
+    {
+      "id": "killFeedRow",
+      "mode": "feedRow",
+      "x": 0.720,
+      "y": 0.055,
+      "w": 0.275,
+      "h": 0.245,
+      "goldHueMin": 40, "goldHueMax": 62, "goldSatMin": 0.5, "goldValMin": 0.6,
+      "tealHueMin": 150, "tealHueMax": 190, "tealSatMin": 0.35, "tealValMin": 0.35,
+      "redHueMin": 340, "redHueMax": 10, "redSatMin": 0.5, "redValMin": 0.45,
+      "minGold": 30,
+      "minTeal": 300,
+      "minRed": 300,
+      "minBandHeight": 8,
+      "minSeparation": 60,
+      "minRowWidth": 40
+    }
+  ]
+}

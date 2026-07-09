@@ -1,0 +1,388 @@
+<Window x:Class="Wisp.OnboardingWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Wisp Setup Wizard" 
+        Height="520" Width="680"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None" AllowsTransparency="True"
+        Background="{DynamicResource AppBackgroundBrush}"
+        BorderBrush="{DynamicResource PanelBorderBrush}" BorderThickness="1"
+        Loaded="Window_Loaded">
+    
+    <Window.Resources>
+        <!-- Shared Eased Animations -->
+        <Storyboard x:Key="HoverScaleIn">
+            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.04" Duration="0:0:0.16">
+                <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.04" Duration="0:0:0.16">
+                <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+        <Storyboard x:Key="HoverScaleOut">
+            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1" Duration="0:0:0.22">
+                <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1" Duration="0:0:0.22">
+                <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+
+        <!-- Toggle Switch Style -->
+        <Style x:Key="ToggleSwitchStyle" TargetType="CheckBox">
+            <Setter Property="Foreground" Value="#E2E2E2"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <Grid Background="Transparent">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border x:Name="SwitchTrack" Grid.Column="0" Width="38" Height="20" Background="#1E2020" CornerRadius="10" BorderBrush="#3B494B" BorderThickness="1" SnapsToDevicePixels="True" VerticalAlignment="Center">
+                                <Ellipse x:Name="SwitchThumb" Width="14" Height="14" Fill="#B9CACB" HorizontalAlignment="Left" Margin="2,0,2,0" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5">
+                                    <Ellipse.RenderTransform>
+                                        <TranslateTransform X="0"/>
+                                    </Ellipse.RenderTransform>
+                                </Ellipse>
+                            </Border>
+                            <ContentPresenter Grid.Column="1" Margin="8,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="SwitchTrack" Property="Background" Value="{DynamicResource AccentBrush}"/>
+                                <Setter TargetName="SwitchTrack" Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+                                <Setter TargetName="SwitchThumb" Property="Fill" Value="#121414"/>
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="SwitchThumb" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" To="18" Duration="0:0:0.22">
+                                                <DoubleAnimation.EasingFunction><BackEase EasingMode="EaseOut" Amplitude="0.6"/></DoubleAnimation.EasingFunction>
+                                            </DoubleAnimation>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="SwitchThumb" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" To="0" Duration="0:0:0.2">
+                                                <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction>
+                                            </DoubleAnimation>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="False">
+                                <Setter TargetName="SwitchTrack" Property="Background" Value="#1E2020"/>
+                                <Setter TargetName="SwitchTrack" Property="BorderBrush" Value="#3B494B"/>
+                                <Setter TargetName="SwitchThumb" Property="Fill" Value="#B9CACB"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Premium Button Style -->
+        <Style x:Key="PremiumPrimaryButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+            <Setter Property="Foreground" Value="#121414" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="1" ScaleY="1"/>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bdr" Background="{TemplateBinding Background}" CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bdr" Property="Background" Value="{DynamicResource AccentHoverBrush}"/>
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard Storyboard="{StaticResource HoverScaleIn}"/>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard Storyboard="{StaticResource HoverScaleOut}"/>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Premium Secondary Button Style -->
+        <Style x:Key="PremiumSecondaryButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#1E2020" />
+            <Setter Property="Foreground" Value="#E2E2E2" />
+            <Setter Property="BorderBrush" Value="#3B494B" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="1" ScaleY="1"/>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bdr" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bdr" Property="Background" Value="#282A2B"/>
+                                <Setter TargetName="Bdr" Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard Storyboard="{StaticResource HoverScaleIn}"/>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard Storyboard="{StaticResource HoverScaleOut}"/>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50" /> <!-- Custom Title Bar -->
+            <RowDefinition Height="*" />  <!-- Wizard Content -->
+            <RowDefinition Height="64" /> <!-- Navigation Footer -->
+        </Grid.RowDefinitions>
+
+        <!-- Custom Title Bar -->
+        <Border Grid.Row="0" BorderBrush="{DynamicResource PanelBorderBrush}" BorderThickness="0,0,0,1" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown" Background="#0A0B0B">
+            <Grid Margin="15,0,15,0">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Image Source="/img/WispIcon.png" Height="22" Width="22" Margin="0,0,8,0" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality"/>
+                    <TextBlock Text="Wisp Setup Wizard" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                </StackPanel>
+                <Button Content="&#xE10A;" FontFamily="Segoe MDL2 Assets" FontSize="11" Width="32" Height="32" HorizontalAlignment="Right" VerticalAlignment="Center" Background="Transparent" Foreground="{DynamicResource TextMutedBrush}" BorderThickness="0" Click="CloseBtn_Click" Cursor="Hand">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border x:Name="Bdr" Background="{TemplateBinding Background}" CornerRadius="4">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="Bdr" Property="Background" Value="#2D1212"/>
+                                                <Setter Property="Foreground" Value="Tomato"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- Wizard Pages Content -->
+        <Grid Grid.Row="1" Margin="35,25,35,10">
+            
+            <!-- STEP 0: Welcome -->
+            <Border x:Name="Page0" Visibility="Visible" Opacity="1">
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <Image Source="/img/WispWordmark.png" Height="48" Margin="0,0,0,20" Stretch="Uniform" HorizontalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
+                    <TextBlock Text="Welcome to Wisp" Foreground="{DynamicResource AccentBrush}" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                    <TextBlock Text="A lightweight, shareable screen and audio clipping recorder." Foreground="{DynamicResource TextPrimaryBrush}" FontSize="13" HorizontalAlignment="Center" Margin="0,0,0,6"/>
+                    <TextBlock Text="Let's configure Wisp so it works perfectly with your setup." Foreground="{DynamicResource TextMutedBrush}" FontSize="12" HorizontalAlignment="Center" Margin="0,0,0,35"/>
+                    <Button x:Name="GetStartedBtn" Content="Get Started" Width="160" Height="38" Style="{StaticResource PremiumPrimaryButtonStyle}" Click="NextBtn_Click"/>
+                </StackPanel>
+            </Border>
+
+            <!-- STEP 1: Personalization (Theme) -->
+            <Border x:Name="Page1" Visibility="Collapsed" Opacity="0">
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="Personalize Wisp" Foreground="{DynamicResource AccentBrush}" FontSize="20" FontWeight="Bold" Margin="0,0,0,6"/>
+                    <TextBlock Text="Wisp adapts to your style. Choose an accent color theme below." Foreground="{DynamicResource TextMutedBrush}" FontSize="12" Margin="0,0,0,24"/>
+                    
+                    <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource PanelBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="20">
+                        <StackPanel>
+                            <TextBlock Text="THEME ACCENT COLOR PRESETS" Foreground="{DynamicResource TextMutedBrush}" FontSize="9" FontWeight="Bold" FontFamily="Consolas" Margin="0,0,0,12"/>
+                            <!-- Swatches loaded in code-behind -->
+                            <WrapPanel x:Name="PresetSwatchPanel" Orientation="Horizontal" HorizontalAlignment="Left" Height="46"/>
+                            <TextBlock Text="The app interface instantly recolors as you pick your favorite shade." Foreground="{DynamicResource TextMutedBrush}" FontSize="11" Margin="0,15,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <!-- STEP 2: Hotkey -->
+            <Border x:Name="Page2" Visibility="Collapsed" Opacity="0">
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="Configure Save Hotkey" Foreground="{DynamicResource AccentBrush}" FontSize="20" FontWeight="Bold" Margin="0,0,0,6"/>
+                    <TextBlock Text="Choose the key combination you will press to save a clip of your gameplay." Foreground="{DynamicResource TextMutedBrush}" FontSize="12" Margin="0,0,0,24"/>
+                    
+                    <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource PanelBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="25">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="PRESS HOTKEY TO SAVE CLIP" Foreground="{DynamicResource TextMutedBrush}" FontSize="9" FontWeight="Bold" FontFamily="Consolas" HorizontalAlignment="Center" Margin="0,0,0,15"/>
+                            <Button x:Name="HotkeyBtn" Content="F9" Width="200" Height="42" Foreground="{DynamicResource AccentBrush}" BorderBrush="{DynamicResource PanelBorderBrush}" BorderThickness="1" Background="#121414" FontSize="15" FontWeight="Bold" Click="HotkeyBtn_Click" Cursor="Hand">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="6">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                            <TextBlock Text="Click the button to record, then press your desired hotkey combination." Foreground="{DynamicResource TextMutedBrush}" FontSize="11" HorizontalAlignment="Center" Margin="0,15,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <!-- STEP 3: Output Folder -->
+            <Border x:Name="Page3" Visibility="Collapsed" Opacity="0">
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="Select Storage Folder" Foreground="{DynamicResource AccentBrush}" FontSize="20" FontWeight="Bold" Margin="0,0,0,6"/>
+                    <TextBlock Text="Choose where Wisp should save recorded video clips and thumbnails." Foreground="{DynamicResource TextMutedBrush}" FontSize="12" Margin="0,0,0,24"/>
+                    
+                    <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource PanelBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="20">
+                        <StackPanel>
+                            <TextBlock Text="CLIP OUTPUT DIRECTORY" Foreground="{DynamicResource TextMutedBrush}" FontSize="9" FontWeight="Bold" FontFamily="Consolas" Margin="0,0,0,8"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="100"/>
+                                </Grid.ColumnDefinitions>
+                                <Border Grid.Column="0" Background="#121414" CornerRadius="6" BorderBrush="{DynamicResource PanelBorderBrush}" BorderThickness="1" Height="36" Margin="0,0,10,0">
+                                    <TextBox x:Name="OutputFolderTextBox" IsReadOnly="True" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Margin="10,0,10,0" FontSize="12"/>
+                                </Border>
+                                <Button Grid.Column="1" Content="Browse..." Height="36" Style="{StaticResource PremiumSecondaryButtonStyle}" Click="BrowseBtn_Click"/>
+                            </Grid>
+                            <TextBlock Text="We recommend using an SSD with enough space to store gameplay highlights." Foreground="{DynamicResource TextMutedBrush}" FontSize="11" Margin="0,15,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <!-- STEP 4: Audio Capture -->
+            <Border x:Name="Page4" Visibility="Collapsed" Opacity="0">
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="Audio Configuration" Foreground="{DynamicResource AccentBrush}" FontSize="20" FontWeight="Bold" Margin="0,0,0,6"/>
+                    <TextBlock Text="Configure system sounds, voice communication, and micro-lane mix settings." Foreground="{DynamicResource TextMutedBrush}" FontSize="12" Margin="0,0,0,24"/>
+                    
+                    <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource PanelBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="20">
+                        <StackPanel>
+                            <!-- System Audio -->
+                            <Grid Margin="0,0,0,12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="System &amp; Game Audio" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="12" FontWeight="SemiBold"/>
+                                    <TextBlock Text="Record games and system sounds." Foreground="{DynamicResource TextMutedBrush}" FontSize="11"/>
+                                </StackPanel>
+                                <CheckBox x:Name="SysAudioCheck" Grid.Column="1" Style="{StaticResource ToggleSwitchStyle}"/>
+                            </Grid>
+
+                            <!-- Microphone -->
+                            <Grid Margin="0,0,0,12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Microphone Input" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="12" FontWeight="SemiBold"/>
+                                    <TextBlock Text="Record your microphone to a separate audio lane." Foreground="{DynamicResource TextMutedBrush}" FontSize="11"/>
+                                </StackPanel>
+                                <CheckBox x:Name="MicCheck" Grid.Column="1" Style="{StaticResource ToggleSwitchStyle}" Checked="MicCheck_Changed" Unchecked="MicCheck_Changed"/>
+                            </Grid>
+
+                            <!-- Mic Device Selection -->
+                            <StackPanel x:Name="MicDevicePanel" Margin="0,0,0,12" Visibility="Collapsed">
+                                <TextBlock Text="SELECT MICROPHONE DEVICE" Foreground="{DynamicResource TextMutedBrush}" FontSize="9" FontWeight="Bold" FontFamily="Consolas" Margin="0,0,0,6"/>
+                                <ComboBox x:Name="MicDeviceCombo" Height="32" Background="#121414" Foreground="#E2E2E2" BorderBrush="#3B494B"/>
+                            </StackPanel>
+
+                            <!-- Social Isolation -->
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Separate Discord &amp; Chat Audio" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="12" FontWeight="SemiBold"/>
+                                    <TextBlock Text="Separates communication voices so you can mix/mute them." Foreground="{DynamicResource TextMutedBrush}" FontSize="11"/>
+                                </StackPanel>
+                                <CheckBox x:Name="SocialAudioCheck" Grid.Column="1" Style="{StaticResource ToggleSwitchStyle}"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <!-- STEP 5: Finish -->
+            <Border x:Name="Page5" Visibility="Collapsed" Opacity="0">
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="Configuration Complete!" Foreground="{DynamicResource AccentBrush}" FontSize="20" FontWeight="Bold" Margin="0,0,0,6"/>
+                    <TextBlock Text="Wisp is now fully configured and ready to capture your moments." Foreground="{DynamicResource TextMutedBrush}" FontSize="12" Margin="0,0,0,20"/>
+                    
+                    <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource PanelBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="20" Margin="0,0,0,20">
+                        <StackPanel>
+                            <TextBlock Text="SUMMARY" Foreground="{DynamicResource TextMutedBrush}" FontSize="9" FontWeight="Bold" FontFamily="Consolas" Margin="0,0,0,10"/>
+                            
+                            <Grid Margin="0,0,0,6">
+                                <TextBlock Text="Theme:" Foreground="{DynamicResource TextMutedBrush}" FontSize="12"/>
+                                <TextBlock x:Name="SummaryThemeText" Text="Wisp Cyan" Foreground="{DynamicResource AccentBrush}" FontSize="12" HorizontalAlignment="Right" FontWeight="SemiBold"/>
+                            </Grid>
+                            <Grid Margin="0,0,0,6">
+                                <TextBlock Text="Save Hotkey:" Foreground="{DynamicResource TextMutedBrush}" FontSize="12"/>
+                                <TextBlock x:Name="SummaryHotkeyText" Text="F9" Foreground="{DynamicResource AccentBrush}" FontSize="12" HorizontalAlignment="Right" FontWeight="SemiBold"/>
+                            </Grid>
+                            <Grid Margin="0,0,0,6">
+                                <TextBlock Text="Output Location:" Foreground="{DynamicResource TextMutedBrush}" FontSize="12"/>
+                                <TextBlock x:Name="SummaryFolderText" Text="C:\..." Foreground="{DynamicResource AccentBrush}" FontSize="12" HorizontalAlignment="Right" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" MaxWidth="300"/>
+                            </Grid>
+                            <Grid>
+                                <TextBlock Text="Audio Captures:" Foreground="{DynamicResource TextMutedBrush}" FontSize="12"/>
+                                <TextBlock x:Name="SummaryAudioText" Text="System Audio, Mic" Foreground="{DynamicResource AccentBrush}" FontSize="12" HorizontalAlignment="Right" FontWeight="SemiBold"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <Button Content="Launch Wisp" Width="180" Height="40" Style="{StaticResource PremiumPrimaryButtonStyle}" Click="FinishBtn_Click" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+        </Grid>
+
+        <!-- Navigation Footer -->
+        <Border Grid.Row="2" BorderBrush="{DynamicResource PanelBorderBrush}" BorderThickness="0,1,0,0" Background="#0A0B0B">
+            <Grid Margin="25,0,25,0">
+                <Button x:Name="BackBtn" Content="Back" Width="90" Height="32" Style="{StaticResource PremiumSecondaryButtonStyle}" HorizontalAlignment="Left" VerticalAlignment="Center" Click="BackBtn_Click" Visibility="Collapsed"/>
+                
+                <!-- Dot Page Indicator -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Ellipse x:Name="Dot0" Width="8" Height="8" Fill="{DynamicResource AccentBrush}" Margin="4,0,4,0"/>
+                    <Ellipse x:Name="Dot1" Width="8" Height="8" Fill="{DynamicResource PanelBorderBrush}" Margin="4,0,4,0"/>
+                    <Ellipse x:Name="Dot2" Width="8" Height="8" Fill="{DynamicResource PanelBorderBrush}" Margin="4,0,4,0"/>
+                    <Ellipse x:Name="Dot3" Width="8" Height="8" Fill="{DynamicResource PanelBorderBrush}" Margin="4,0,4,0"/>
+                    <Ellipse x:Name="Dot4" Width="8" Height="8" Fill="{DynamicResource PanelBorderBrush}" Margin="4,0,4,0"/>
+                    <Ellipse x:Name="Dot5" Width="8" Height="8" Fill="{DynamicResource PanelBorderBrush}" Margin="4,0,4,0"/>
+                </StackPanel>
+
+                <Button x:Name="NextBtn" Content="Next" Width="90" Height="32" Style="{StaticResource PremiumPrimaryButtonStyle}" HorizontalAlignment="Right" VerticalAlignment="Center" Click="NextBtn_Click" Visibility="Collapsed"/>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

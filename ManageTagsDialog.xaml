@@ -1,0 +1,174 @@
+<Window x:Class="Wisp.ManageTagsDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Manage Tags" Height="380" Width="520"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
+        Opacity="0" Loaded="Window_Loaded">
+
+    <Window.Resources>
+        <!-- Custom Button Style -->
+        <Style x:Key="DialogButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#1E2020"/>
+            <Setter Property="Foreground" Value="#E2E2E2"/>
+            <Setter Property="BorderBrush" Value="#3B494B"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#2A2D2E"/>
+                    <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="AccentButtonStyle" TargetType="Button" BasedOn="{StaticResource DialogButtonStyle}">
+            <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+            <Setter Property="Foreground" Value="#121414"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="DangerButtonStyle" TargetType="Button" BasedOn="{StaticResource DialogButtonStyle}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#FF4444"/>
+            <Setter Property="BorderBrush" Value="#FF4444"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#33FF4444"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Border x:Name="RootBorder" Background="#121414" BorderBrush="#3B494B" BorderThickness="1.5" CornerRadius="8" Padding="20" RenderTransformOrigin="0.5,0.5">
+        <Border.RenderTransform>
+            <ScaleTransform ScaleX="0.92" ScaleY="0.92"/>
+        </Border.RenderTransform>
+        
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" /> <!-- Header -->
+                <RowDefinition Height="*" />    <!-- Content -->
+                <RowDefinition Height="Auto" /> <!-- Dialog Action Buttons -->
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <Grid Grid.Row="0" Margin="0,0,0,15">
+                <TextBlock Text="MANAGE TAGS" Foreground="{DynamicResource AccentBrush}" FontWeight="Bold" FontSize="13" FontFamily="Consolas"/>
+                <Button x:Name="CloseBtn" HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Width="24" Height="24" Background="Transparent" BorderThickness="0" Foreground="#B9CACB" Click="CloseBtn_Click">
+                    <Button.Content>
+                        <Path Width="9" Height="9" Stretch="Uniform" Data="M2,2 L14,14 M14,2 L2,14"
+                              Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                    </Button.Content>
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" CornerRadius="12">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#282A2B"/>
+                                    <Setter Property="Foreground" Value="White"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </Grid>
+
+            <!-- Content Area (Split Left/Right) -->
+            <Grid Grid.Row="1" Margin="0,0,0,15">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200" /> <!-- Left Tag List -->
+                    <ColumnDefinition Width="20" />  <!-- Spacer -->
+                    <ColumnDefinition Width="*" />   <!-- Right Editor -->
+                </Grid.ColumnDefinitions>
+
+                <!-- Left Panel: Tag List -->
+                <Grid Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    
+                    <ListBox x:Name="TagsListBox" Grid.Row="0" Background="#1E2020" BorderBrush="#3B494B" BorderThickness="1" 
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="TagsListBox_SelectionChanged"
+                             ScrollViewer.VerticalScrollBarVisibility="Auto">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="{Binding BackgroundBrush}" BorderBrush="{Binding BorderBrush}" BorderThickness="1" CornerRadius="4" Padding="6,4" Margin="2">
+                                    <TextBlock Text="{Binding Name}" Foreground="{Binding TextBrush}" FontSize="10" FontWeight="Bold"/>
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                    <Button x:Name="AddNewTagBtn" Grid.Row="1" Content="+ Create New Tag" Height="28" Margin="0,8,0,0" Style="{StaticResource DialogButtonStyle}" Click="AddNewTagBtn_Click"/>
+                </Grid>
+
+                <!-- Column Splitter (Visual Line) -->
+                <Border Grid.Column="1" Width="1" Background="#3B494B" HorizontalAlignment="Center" VerticalAlignment="Stretch" Margin="0,5"/>
+
+                <!-- Right Panel: Editor / Creator -->
+                <Grid Grid.Column="2">
+                    <StackPanel x:Name="EditorPanel" VerticalAlignment="Top">
+                        <TextBlock x:Name="EditorHeader" Text="CREATE NEW TAG" Foreground="#E2E2E2" FontWeight="Bold" FontSize="11" Margin="0,0,0,12" FontFamily="Consolas"/>
+                        
+                        <!-- Name Field -->
+                        <TextBlock Text="TAG NAME" Foreground="#B9CACB" FontSize="9" FontWeight="Bold" Margin="0,0,0,4" FontFamily="Consolas"/>
+                        <Border Background="#1E2020" CornerRadius="4" BorderBrush="#3B494B" BorderThickness="1" Height="30" Margin="0,0,0,15">
+                            <TextBox x:Name="TagNameTextBox" Background="Transparent" BorderThickness="0" Foreground="#E2E2E2" 
+                                      VerticalAlignment="Center" Margin="8,0,8,0" CaretBrush="{DynamicResource AccentBrush}"/>
+                        </Border>
+
+                        <!-- Color Selector -->
+                        <TextBlock Text="TAG COLOR" Foreground="#B9CACB" FontSize="9" FontWeight="Bold" Margin="0,0,0,6" FontFamily="Consolas"/>
+                        <UniformGrid x:Name="ColorSwatchesGrid" Columns="5" Rows="2" Margin="0,0,0,20">
+                            <!-- Swatches will be generated dynamically in code behind to bind color selection easily -->
+                        </UniformGrid>
+
+                        <!-- Actions -->
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            
+                            <Button x:Name="SaveTagBtn" Grid.Column="0" Content="Create Tag" Height="30" Margin="0,0,8,0" Style="{StaticResource AccentButtonStyle}" Click="SaveTagBtn_Click"/>
+                            <Button x:Name="DeleteTagBtn" Grid.Column="1" Content="Delete" Width="70" Height="30" Style="{StaticResource DangerButtonStyle}" Click="DeleteTagBtn_Click" Visibility="Collapsed"/>
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+
+            <!-- Bottom Action Footer -->
+            <Grid Grid.Row="2">
+                <Button Content="Done" HorizontalAlignment="Right" Width="90" Height="30" Style="{StaticResource DialogButtonStyle}" Click="DoneBtn_Click"/>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>
