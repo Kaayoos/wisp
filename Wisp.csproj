@@ -55,7 +55,7 @@
     <!-- Single source of truth for the app version. Drives AssemblyVersion/FileVersion AND the
          Velopack release version (the release pipeline reads this), so the auto-updater compares
          against it. Bump this for every public release. -->
-    <Version>1.1.0</Version>
+    <Version>1.1.1</Version>
 
     <!-- Favor a small memory footprint for a background tray app -->
     <ServerGarbageCollection>false</ServerGarbageCollection>

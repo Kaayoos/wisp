@@ -86,6 +86,56 @@ namespace Wisp.Services
             catch { return null; }
         }
 
+        /// <summary>
+        /// The DXGI output ordinal for a monitor, as FFmpeg's <c>ddagrab=output_idx</c> counts them - which
+        /// is NOT necessarily <see cref="MonitorTarget.Index"/> (Screen.AllScreens order). ddagrab indexes
+        /// <c>IDXGIAdapter::EnumOutputs</c> on the default adapter, and that order can differ from the
+        /// Windows display list; when it does, feeding it the Screen index makes ddagrab capture the wrong
+        /// physical monitor (or an index that doesn't exist, which fails and drops to the fallback chain).
+        /// We enumerate DXGI ourselves and match by device name - <c>DXGI_OUTPUT_DESC.DeviceName</c> is the
+        /// same <c>\\.\DISPLAYn</c> string as <see cref="MonitorTarget.DeviceName"/>.
+        ///
+        /// Best-effort and non-throwing: returns null on any failure, an empty name, or no match, so the
+        /// caller keeps using the Screen index (the historical behavior - no regression). Only the default
+        /// adapter (index 0, the one ddagrab uses) is consulted; a monitor driven by a second GPU is absent
+        /// here and yields null, leaving the existing GDI / GPU-preference fallbacks to handle it.
+        /// </summary>
+        public static int? TryGetDdaGrabOutputIndex(string? deviceName)
+        {
+            if (string.IsNullOrWhiteSpace(deviceName)) return null;
+            IDXGIFactory1? factory = null;
+            IDXGIAdapter1? adapter = null;
+            try
+            {
+                var iid = typeof(IDXGIFactory1).GUID;
+                if (CreateDXGIFactory1(ref iid, out factory) < 0 || factory == null) return null;
+                if (factory.EnumAdapters1(0, out adapter) < 0 || adapter == null) return null;
+
+                for (uint i = 0; ; i++)
+                {
+                    if (adapter.EnumOutputs(i, out IDXGIOutput? output) < 0 || output == null)
+                        break; // DXGI_ERROR_NOT_FOUND: no more outputs on this adapter
+                    try
+                    {
+                        if (output.GetDesc(out DXGI_OUTPUT_DESC desc) >= 0 &&
+                            string.Equals(desc.DeviceName, deviceName, StringComparison.OrdinalIgnoreCase))
+                            return (int)i;
+                    }
+                    finally { Marshal.ReleaseComObject(output); }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Warn($"DisplayHelper.TryGetDdaGrabOutputIndex('{deviceName}') failed: {ex.Message}");
+            }
+            finally
+            {
+                if (adapter != null) Marshal.ReleaseComObject(adapter);
+                if (factory != null) Marshal.ReleaseComObject(factory);
+            }
+            return null;
+        }
+
         /// <summary>Effective DPI scale of the monitor a screen represents (1.0 if it can't be read).</summary>
         public static double GetDpiScaleForScreen(WForms.Screen s)
         {
@@ -149,5 +199,48 @@ namespace Wisp.Services
         private const uint SWP_NOMOVE = 0x0002;
         private const uint SWP_NOZORDER = 0x0004;
         private const uint SWP_NOACTIVATE = 0x0010;
+
+        // ---- DXGI output enumeration (maps a monitor to ddagrab's output_idx; see TryGetDdaGrabOutputIndex).
+        // Minimal COM interop: only the methods we actually call carry real signatures. Earlier vtable slots
+        // are placeholders (_0, _1, ...) that exist purely to push the called methods to the correct offset;
+        // we never invoke a placeholder, so its signature is irrelevant. Slot order is verified against the
+        // dxgi.h inheritance chain (IUnknown 0-2, then IDXGIObject, then the interface's own methods).
+        [DllImport("dxgi.dll")]
+        private static extern int CreateDXGIFactory1(ref Guid riid, out IDXGIFactory1 ppFactory);
+
+        [ComImport, Guid("770aae78-f26f-4dba-a829-253c83d1b387"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+        private interface IDXGIFactory1
+        {
+            void _0(); void _1(); void _2(); void _3();               // IDXGIObject (SetPrivateData..GetParent)
+            void _4(); void _5(); void _6(); void _7(); void _8();     // IDXGIFactory (EnumAdapters..CreateSoftwareAdapter)
+            [PreserveSig] int EnumAdapters1(uint Adapter, out IDXGIAdapter1 ppAdapter); // IDXGIFactory1
+        }
+
+        [ComImport, Guid("29038f61-3839-4626-91fd-086879011a05"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+        private interface IDXGIAdapter1
+        {
+            void _0(); void _1(); void _2(); void _3();               // IDXGIObject
+            [PreserveSig] int EnumOutputs(uint Output, out IDXGIOutput ppOutput); // IDXGIAdapter
+        }
+
+        [ComImport, Guid("ae02eedb-c735-4690-8d52-5a8dc20213aa"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+        private interface IDXGIOutput
+        {
+            void _0(); void _1(); void _2(); void _3();               // IDXGIObject
+            [PreserveSig] int GetDesc(out DXGI_OUTPUT_DESC pDesc);    // IDXGIOutput
+        }
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        private struct DXGI_OUTPUT_DESC
+        {
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)] public string DeviceName;
+            public RECT DesktopCoordinates;
+            [MarshalAs(UnmanagedType.Bool)] public bool AttachedToDesktop;
+            public int Rotation;
+            public IntPtr Monitor;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct RECT { public int Left, Top, Right, Bottom; }
     }
 }

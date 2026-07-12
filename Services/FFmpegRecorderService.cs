@@ -776,8 +776,9 @@ namespace Wisp.Services
             //     took exclusive fullscreen on another monitor is picked up correctly.
             _activeMonitor = DisplayHelper.ResolveTarget(settings.RecordMonitor, GetForegroundWindow());
             Logger.Info($"Recording monitor '{settings.RecordMonitor}' -> {_activeMonitor.DeviceName} " +
-                $"(index/ddagrab output_idx {_activeMonitor.Index}, {_activeMonitor.Width}x{_activeMonitor.Height} " +
-                $"at {_activeMonitor.X},{_activeMonitor.Y}, scale {_activeMonitor.DpiScale:0.##}x).");
+                $"(screen index {_activeMonitor.Index}, {_activeMonitor.Width}x{_activeMonitor.Height} " +
+                $"at {_activeMonitor.X},{_activeMonitor.Y}, scale {_activeMonitor.DpiScale:0.##}x); " +
+                "ddagrab output_idx is resolved from the DXGI output order at capture start.");
 
             // Tag this run for the multi-run assembler: the output frame size / rate / codec family, so a
             // dead-gap card can be generated that concats cleanly and so the assembler can detect a codec
@@ -948,10 +949,18 @@ namespace Wisp.Services
                 // ddagrab is a source filter under the lavfi (libavfilter) system. It outputs d3d11 hardware frames.
                 // We download them to system memory (CPU) via vf filters. We omit global d3d11va initialization to prevent
                 // conflicts with NVENC/AMF GPU encoding initialization on multi-GPU setups.
-                // output_idx selects the DXGI output (monitor). On a single GPU this matches Screen order;
-                // on the rare multi-GPU/cross-adapter layout it may not, and the gdigrab fallback below -
-                // which uses absolute virtual-desktop coordinates - captures the right region regardless.
-                args.Append($"-y -f lavfi -i ddagrab=output_idx={mon.Index}:draw_mouse=1:framerate={settings.CaptureFps} ");
+                // output_idx selects the DXGI output (monitor). ddagrab counts outputs in DXGI enumeration
+                // order, which is NOT necessarily Screen.AllScreens order (mon.Index) - when they differ,
+                // the screen index points ddagrab at the wrong monitor, or at a non-existent output that
+                // fails and drops us into the fallback chain. Map the device to its real DXGI ordinal;
+                // TryGetDdaGrabOutputIndex returns null (so we keep mon.Index) for single-monitor / same-order
+                // setups and for a monitor on another GPU, where the gdigrab fallback's absolute coordinates
+                // capture the right region regardless.
+                int outputIdx = DisplayHelper.TryGetDdaGrabOutputIndex(mon.DeviceName) ?? mon.Index;
+                if (outputIdx != mon.Index)
+                    Logger.Info($"ddagrab output_idx corrected {mon.Index} -> {outputIdx} for {mon.DeviceName} " +
+                        "(DXGI output order differs from Windows' display order on this machine).");
+                args.Append($"-y -f lavfi -i ddagrab=output_idx={outputIdx}:draw_mouse=1:framerate={settings.CaptureFps} ");
             }
             else
             {

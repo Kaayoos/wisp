@@ -2253,8 +2253,12 @@
                                     </StackPanel>
                                 </Border>
 
-                                <!-- Kill Detection Section -->
-                                <Border Background="#1E2020" BorderBrush="#3B494B" BorderThickness="1" CornerRadius="8" Padding="20" Margin="0,0,0,15">
+                                <!-- Kill Detection Section.
+                                     HIDDEN from Settings while the feature is still incomplete (the detection
+                                     specs aren't tuned yet). The code, service and per-game logic are all left
+                                     intact so work can continue - to bring it back, just remove the
+                                     Visibility="Collapsed" below. It stays default-off while hidden. -->
+                                <Border x:Name="KillDetectionSection" Visibility="Collapsed" Background="#1E2020" BorderBrush="#3B494B" BorderThickness="1" CornerRadius="8" Padding="20" Margin="0,0,0,15">
                                     <StackPanel>
                                         <Grid Margin="0,0,0,4">
                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
