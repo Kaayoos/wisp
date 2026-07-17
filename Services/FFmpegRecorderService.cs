@@ -481,6 +481,33 @@ namespace Wisp.Services
             return list.Distinct().ToList();
         }
 
+        /// <summary>
+        /// Hardware encoders from the OTHER GPU vendors, tried when the chosen vendor's encoder fails to
+        /// attach to a working ddagrab capture (stage 2a). On dual-GPU machines the second GPU's encoder
+        /// usually initializes fine, keeping capture flicker-free at hardware-encode CPU cost instead of
+        /// dropping to software x264. Each vendor keeps the user's codec preference with the same per-vendor
+        /// degrade order as <see cref="BuildEncoderCandidates"/>. Empty when a software encoder was the one
+        /// that failed - there is nothing cheaper left to offer.
+        /// </summary>
+        private static List<string> BuildCrossVendorHardwareFallbacks(string failedEncoder, string? codec)
+        {
+            string failedVendor = failedEncoder.EndsWith("_nvenc") ? "nvenc"
+                                : failedEncoder.EndsWith("_amf") ? "amf"
+                                : failedEncoder.EndsWith("_qsv") ? "qsv" : "";
+            var list = new List<string>();
+            if (failedVendor.Length == 0) return list;
+
+            foreach (var vendor in new[] { "nvenc", "amf", "qsv" })
+            {
+                if (vendor == failedVendor) continue;
+                foreach (var cand in BuildEncoderCandidates($"h264_{vendor}", codec))
+                {
+                    if (!cand.StartsWith("lib")) list.Add(cand);
+                }
+            }
+            return list.Distinct().ToList();
+        }
+
         public List<string> GetMicrophoneDevices()
         {
             var list = new List<string>();
@@ -833,14 +860,40 @@ namespace Wisp.Services
                 ddagrabInputFailed = LastErrorWasDdagrabInputFailure();
             }
 
-            // 3b. Stage 2: ddagrab + libx264 (CPU). If ddagrab itself is fine but the hardware ENCODER is
-            //     what won't initialize, stay on the no-flicker capture and only swap the encoder. This is
-            //     the common case on hybrid-GPU laptops: the panel is driven by the iGPU while we picked the
-            //     dGPU's encoder (NVENC/AMF), and the dGPU is often parked for power - so its encoder
-            //     intermittently fails to attach to ddagrab's frames. The old chain mistook that for a
-            //     ddagrab failure and dropped straight to the flickering gdigrab path; this keeps it smooth.
-            //     Skipped when the INPUT failed to open - no encoder can fix a capture source that isn't
-            //     there, and each pointless spawn costs the running game a stutter hitch.
+            // 3b. Stage 2a: ddagrab + a DIFFERENT hardware encoder. If ddagrab itself is fine but the chosen
+            //     hardware ENCODER won't attach - the common case on hybrid-GPU machines, where the encoder's
+            //     GPU is parked for power or display ownership just migrated to the other GPU - the OTHER
+            //     GPU's encoder usually attaches fine. Try every other vendor's hardware encoder (probed
+            //     first, so machines without one skip this at the cost of a sub-second probe) BEFORE
+            //     conceding to CPU encoding: software x264 costs several cores continuously, which on
+            //     smaller CPUs starves the running game. Skipped when the INPUT failed to open - no encoder
+            //     can fix a capture source that isn't there, and each pointless spawn costs the running
+            //     game a stutter hitch.
+            if (!ddagrabInputFailed && encoder != "libx264")
+            {
+                foreach (var alt in BuildCrossVendorHardwareFallbacks(encoder, settings.VideoCodec))
+                {
+                    if (!TestEncoder(alt)) continue;
+                    Logger.Warn($"ddagrab + {encoder} failed to start. Retrying ddagrab with hardware encoder '{alt}' before any CPU fallback.");
+                    if (StartFFmpegProcessInternal(settings, alt, useDdaGrab: true))
+                    {
+                        return;
+                    }
+                    if (LastErrorWasDdagrabInputFailure())
+                    {
+                        // The capture source itself just died (display mode-switch mid-chain); further
+                        // encoder swaps are pointless spawns against a missing input.
+                        ddagrabInputFailed = true;
+                        break;
+                    }
+                }
+            }
+
+            // 3c. Stage 2b: ddagrab + libx264 (CPU) - only after every hardware encoder on the machine has
+            //     had its chance. Stays on the no-flicker capture and pays CPU for it; kept because a
+            //     machine whose only hardware encoder can't attach still deserves smooth capture, but it is
+            //     deliberately the LAST resort before gdigrab (see the field CPU reports: a session that
+            //     lands here encodes on several cores for its whole lifetime).
             if (!ddagrabInputFailed && encoder != "libx264")
             {
                 Logger.Warn("ddagrab + hardware encoder failed to start. Retrying ddagrab with the libx264 CPU encoder (capture stays flicker-free).");
